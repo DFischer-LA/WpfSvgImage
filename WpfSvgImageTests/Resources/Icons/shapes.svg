@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="400" height="300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <!-- Rectangle -->
+  <rect x="10" y="10" width="50" height="50" fill="red" rx="3" ry="3" />
+  <rect x="10" y="100" width="50" height="50" fill="red" rx="3" ry="3" transform="skewX(20) rotate(10)"/>
+
+  <!-- Circle -->
+  <circle cx="90" cy="30" r="20" fill="blue" />
+
+  <!-- Line -->
+  <line x1="150" y1="10" x2="250" y2="100" stroke="green" stroke-width="2" />
+
+  <!-- Polyline -->
+  <polyline points="200,150 250,200 300,150" fill="none" stroke="purple" stroke-width="3" />
+
+  <!-- Polygon -->
+  <polygon points="300,150 350,200 300,250" fill="orange" />
+
+  <!-- Ellipse -->
+  <ellipse cx="300" cy="200" rx="30" ry="15" fill="brown" />
+  <ellipse rx="30" ry="15" stroke="red" stroke-width="4" transform="rotate(-45) translate(300 200)" />
+
+  <!-- Text -->
+  <text x="20" y="80" fill="yellow" font-size="36" font-family="Verdana">SVG Shapes</text>
+  
+</svg>
