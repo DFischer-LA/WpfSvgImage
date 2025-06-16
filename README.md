@@ -11,6 +11,10 @@
 
 ## Installation
 
+Using Nuget: 
+Download and install the published nuget package through Visual Studio. https://www.nuget.org/packages/WpfSvgImage
+
+From source:
 Add the `WpfSvgImage` project to your solution or reference the compiled DLL in your WPF application targeting .NET 8 or later.
 
 ## Usage
