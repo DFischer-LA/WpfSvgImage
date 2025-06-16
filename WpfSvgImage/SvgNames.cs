@@ -11,6 +11,8 @@ namespace WpfSvgImage
         // SVG element names
         /// <summary>SVG root element: &lt;svg&gt;</summary>
         public const string svg = "svg";
+        /// <summary>SVG id element: &lt;use&gt;</summary>
+        public const string id = "id";
         /// <summary>SVG group element: &lt;g&gt;</summary>
         public const string g = "g";
         /// <summary>SVG path element: &lt;path&gt;</summary>
@@ -29,14 +31,82 @@ namespace WpfSvgImage
         public const string polyline = "polyline";
         /// <summary>SVG text element: &lt;text&gt;</summary>
         public const string text = "text";
+        /// <summary>SVG defs element: &lt;defs&gt;</summary>
+        public const string defs = "defs";
+        /// <summary>SVG style element: &lt;style&gt;</summary>
+        public const string style = "style";
+        /// <summary>SVG reference attribute: &lt;xlink:href&gt;</summary>
+        public const string xlinkhref = "xlink:href"; // SVG uses xlink namespace for href attributes
+        /// <summary>SVGreference attribute: &lt;href&gt;</summary>
+        public const string href = "href"; // SVG 2 uses href directly without xlink namespace
+        /// <summary>SVG url attribute: &lt;url&gt;</summary>
+        public const string url = "url"; // SVG uses url() for referencing elements
+
+        // SVG brush definitions
+        /// <summary>SVG linear gradient element: &lt;style&gt;</summary>
+        public const string linearGradient = "linearGradient";
+        /// <summary>SVG radial gradient element: &lt;radialGradient&gt;</summary>
+        public const string radialGradient = "radialGradient";
+        /// <summary>SVG gradient stop element: &lt;stop&gt;</summary>\
+        public const string stop = "stop";
+        /// <summary>SVG gradient offset attribute: &lt;offset&gt;</summary>
+        public const string offset = "offset";
+        /// <summary>SVG gradient stop color attribute: &lt;stop-color&gt;</summary>\
+        public const string stopColor = "stop-color";
+        /// <summary>SVG gradient stop opacity attribute: &lt;stop-opacity&gt;</summary>
+        public const string stopOpacity = "stop-opacity";
+        /// <summary>SVG gradient transform: &lt;gradientTransform&gt;</summary>
+        public const string gradientTransform = "gradientTransform";
+        /// <summary>SVG gradient units attribute: &lt;gradientUnits&gt;</summary>
+        public const string gradientUnits = "gradientUnits";
+        /// <summary>SVG gradient units value: "userSpaceOnUse".</summary>
+        public const string userSpaceOnUse = "userSpaceOnUse";
+        /// <summary>SVG gradient spread method"spreadMethod".</summary>
+        public const string spreadMethod = "spreadMethod";
+        /// <summary>Pad spread method</summary>
+        public const string pad = "pad";
+        /// <summary>Reflect spread method</summary>
+        public const string reflect = "reflect";
+        /// <summary>Repeat spread method</summary>
+        public const string repeat = "repeat";
 
         // Common SVG attribute names
+        /// <summary>Opacity attribute</summary>
+        public const string opacity = "opacity";
         /// <summary>Stroke color attribute.</summary>
         public const string stroke = "stroke";
         /// <summary>Stroke width attribute.</summary>
         public const string strokeWidth = "stroke-width";
+        /// <summary>Stroke line cap value: "butt".</summary>
+        public const string strokeLinecap = "stroke-linecap";
+        /// <summary>Stroke line cap value: "round".</summary>
+        public const string butt = "butt";
+        /// <summary>Stroke line cap value: "round".</summary>
+        public const string round = "round";
+        /// <summary>Stroke line cap value: "square".</summary>
+        public const string square = "square";
+        /// /// <summary>Stroke line join value: "miter".</summary>
+        public const string strokeLineJoin = "stroke-linejoin";
+        /// <summary>Stroke line join value: "miter".</summary>
+        public const string miter = "miter";
+        /// <summary>Stroke line join value: "arcs".</summary>
+        public const string arcs = "arcs";
+        /// <summary>Stroke line join value: "bevel".</summary>
+        public const string bevel = "bevel";
+        /// <summary>Stroke line join value: "miter-clip".</summary>
+        public const string miterClip = "miter-clip";
+        /// <summary>Stroke miter limit attribute.</summary>
+        public const string strokeMiterLimit = "stroke-miterlimit";
+        /// <summary>Stroke opacity attribute.</summary>
+        public const string strokeOpacity = "stroke-opacity";
+        /// <summary>Stroke dash offset attribute.</summary>
+        public const string strokeDashOffset = "stroke-dashoffset";
+        /// <summary>Stroke dash array attribute.</summary>
+        public const string strokeDasharray = "stroke-dasharray";
         /// <summary>Fill color attribute.</summary>
         public const string fill = "fill";
+        /// <summary>Fill opacity attribute.</summary>
+        public const string fillOpacity = "fill-opacity";
         /// <summary>Fill rule attribute (e.g., "evenodd", "nonzero").</summary>
         public const string fillRule = "fill-rule";
         /// <summary>Fill rule value: "evenodd".</summary>
@@ -45,6 +115,8 @@ namespace WpfSvgImage
         public const string nonzero = "nonzero";
         /// <summary>Special value for no paint: "none".</summary>
         public const string none = "none";
+        /// <summary>rgb function</summary>
+        public const string rgb = "rgb";
         /// <summary>Path data attribute (for &lt;path&gt; elements).</summary>
         public const string d = "d";
 
@@ -77,6 +149,10 @@ namespace WpfSvgImage
         public const string y2 = "y2";
         /// <summary>Points attribute (for polygons and polylines).</summary>
         public const string points = "points";
+        /// <summary>Focus X for radial gradients</summary>
+        public const string fx = "fx";
+        /// <summary>Focus Y for radial gradients</summary>
+        public const string fy = "fy";
 
         // Text attributes
         /// <summary>Font family attribute (for text).</summary>
