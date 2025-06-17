@@ -1,8 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WpfSvgImage;
 using WpfSvgImage.Elements;
 
@@ -14,12 +12,12 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParsePath_ValidPathData_ReturnsGeometryDrawing()
         {
-            var parser = new SvgParser();
             var pathElement = XElement.Parse(@"<path d='M 10,10 L 100,100' fill='red' stroke='blue' stroke-width='2'/>");
 
             Defs defs = new Defs();
 
-            var drawing = parser.ParsePath(pathElement, defs, null);
+            var path = new WpfSvgImage.Elements.Path(pathElement, defs, null);
+            var drawing = path.Parse();
 
             Assert.IsNotNull(drawing);
             Assert.IsInstanceOfType(drawing, typeof(GeometryDrawing));
@@ -32,30 +30,30 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseEllipse_ValidEllipse_ReturnsGeometryDrawing()
         {
-            var parser = new SvgParser();
             var ellipseElement = XElement.Parse(@"<ellipse cx='50' cy='60' rx='20' ry='10' fill='green'/>");
 
             Defs defs = new Defs();
 
-            var drawing = parser.ParseEllipse(ellipseElement, defs, null);
+            var ellipse = new Ellipse(ellipseElement, defs, null);
+            var drawing = ellipse.Parse();
 
             Assert.IsNotNull(drawing);
             Assert.IsInstanceOfType(drawing.Geometry, typeof(EllipseGeometry));
-            var ellipse = (EllipseGeometry)drawing.Geometry;
-            Assert.AreEqual(new Point(50, 60), ellipse.Center);
-            Assert.AreEqual(20, ellipse.RadiusX, 0.01);
-            Assert.AreEqual(10, ellipse.RadiusY, 0.01);
+            var ellipseGeometry = (EllipseGeometry)drawing.Geometry;
+            Assert.AreEqual(new Point(50, 60), ellipseGeometry.Center);
+            Assert.AreEqual(20, ellipseGeometry.RadiusX, 0.01);
+            Assert.AreEqual(10, ellipseGeometry.RadiusY, 0.01);
         }
 
         [TestMethod]
         public void ParseRectangle_ValidRect_ReturnsGeometryDrawing()
         {
-            var parser = new SvgParser();
             var rectElement = XElement.Parse(@"<rect x='5' y='10' width='20' height='30' fill='blue'/>");
 
             Defs defs = new Defs();
 
-            var drawing = parser.ParseRectangle(rectElement, defs, null);
+            var rectangle = new Rectangle(rectElement, defs, null);
+            var drawing = rectangle.Parse();
             Assert.IsNotNull(drawing);
             Assert.IsInstanceOfType(drawing.Geometry, typeof(RectangleGeometry));
             var rect = (RectangleGeometry)drawing.Geometry;
@@ -65,12 +63,12 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseCircle_ValidCircle_ReturnsGeometryDrawing()
         {
-            var parser = new SvgParser();
             var circleElement = XElement.Parse(@"<circle cx='15' cy='25' r='10' fill='yellow'/>");
 
             Defs defs = new Defs();
 
-            var drawing = parser.ParseCircle(circleElement, defs, null);
+            var circle = new Circle(circleElement, defs, null);
+            var drawing = circle.Parse();
 
             Assert.IsNotNull(drawing);
             Assert.IsInstanceOfType(drawing.Geometry, typeof(EllipseGeometry));
@@ -92,7 +90,6 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseRectangle_WithTransformAndGradient_AppliesTransformToBrush()
         {
-            var parser = new SvgParser();
             var rectElement = XElement.Parse(@"
                 <rect x='0' y='0' width='100' height='100' fill='url(#grad1)' transform='rotate(45)'/>
             ");
@@ -103,9 +100,12 @@ namespace WpfSvgImageTests
                 </linearGradient>
             ");
             Defs defs = new Defs();
-            defs.Elements["grad1"] = parser.ParseLinearGradient(gradElement, defs, null);
 
-            var drawing = parser.ParseRectangle(rectElement, defs, null);
+            var linearGradient = new LinearGradient(gradElement, defs, null);
+            defs.Elements["grad1"] = linearGradient.Parse();
+
+            var rectangle = new Rectangle(rectElement, defs, null);
+            var drawing = rectangle.Parse();
 
             Assert.IsNotNull(drawing.Brush);
             Assert.IsInstanceOfType(drawing.Brush, typeof(LinearGradientBrush));
@@ -116,11 +116,11 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParsePath_WithFillRuleEvenOdd_SetsFillRule()
         {
-            var parser = new SvgParser();
             var pathElement = XElement.Parse(@"<path d='M0,0 L10,0 L10,10 L0,10 Z' fill-rule='evenodd'/>");
             Defs defs = new Defs();
 
-            var drawing = parser.ParsePath(pathElement, defs, null);
+            var path = new WpfSvgImage.Elements.Path(pathElement, defs, null);
+            var drawing = path.Parse();
 
             Assert.IsInstanceOfType(drawing.Geometry, typeof(PathGeometry));
             var pathGeometry = (PathGeometry)drawing.Geometry;
@@ -130,11 +130,11 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseEllipse_WithStyleAttribute_AppliesStyle()
         {
-            var parser = new SvgParser();
             var ellipseElement = XElement.Parse(@"<ellipse cx='10' cy='20' rx='5' ry='5' style='fill: #123456; stroke: #654321; stroke-width: 3;'/>");
             Defs defs = new Defs();
 
-            var drawing = parser.ParseEllipse(ellipseElement, defs, null);
+            var ellipse = new Ellipse(ellipseElement, defs, null);
+            var drawing = ellipse.Parse();
 
             Assert.IsNotNull(drawing.Brush);
             Assert.IsNotNull(drawing.Pen);
@@ -144,11 +144,11 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParsePolygon_ClosesShape()
         {
-            var parser = new SvgParser();
             var polygonElement = XElement.Parse(@"<polygon points='0,0 10,0 10,10 0,10'/>");
             Defs defs = new Defs();
 
-            var drawing = parser.ParsePolygon(polygonElement, defs, null);
+            var polygon = new Polygon(polygonElement, defs, null);
+            var drawing = polygon.Parse();
 
             Assert.IsInstanceOfType(drawing.Geometry, typeof(PathGeometry));
             var pathGeometry = (PathGeometry)drawing.Geometry;
@@ -162,11 +162,11 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseText_WithFontAttributes_AppliesFontSettings()
         {
-            var parser = new SvgParser();
             var textElement = XElement.Parse(@"<text x='5' y='15' font-family='Arial' font-size='24' font-weight='Bold'>A</text>");
             Defs defs = new Defs();
 
-            var drawing = parser.ParseText(textElement, defs, null);
+            var text = new Text(textElement, defs, null);
+            var drawing = text.Parse();
 
             Assert.IsNotNull(drawing.GlyphRun);
             Assert.AreEqual(new Point(5, 15), drawing.GlyphRun.BaselineOrigin);
@@ -176,7 +176,6 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseLinearGradient_WithGradientUnitsUserSpaceOnUse_SetsMappingModeAbsolute()
         {
-            var parser = new SvgParser();
             var gradElement = XElement.Parse(@"
                 <linearGradient id='g' gradientUnits='userSpaceOnUse'>
                     <stop offset='0' stop-color='red'/>
@@ -185,7 +184,8 @@ namespace WpfSvgImageTests
             ");
             Defs defs = new Defs();
 
-            var brush = parser.ParseLinearGradient(gradElement, defs, null);
+            var linearGradient = new LinearGradient(gradElement, defs, null);
+            var brush = linearGradient.Parse();
 
             Assert.IsInstanceOfType(brush, typeof(LinearGradientBrush));
             Assert.AreEqual(BrushMappingMode.Absolute, ((LinearGradientBrush)brush).MappingMode);
@@ -194,7 +194,6 @@ namespace WpfSvgImageTests
         [TestMethod]
         public void ParseRadialGradient_WithSpreadMethodReflect_SetsSpreadMethod()
         {
-            var parser = new SvgParser();
             var gradElement = XElement.Parse(@"
                 <radialGradient id='g' spreadMethod='reflect'>
                     <stop offset='0' stop-color='red'/>
@@ -203,7 +202,8 @@ namespace WpfSvgImageTests
             ");
             Defs defs = new Defs();
 
-            var brush = parser.ParseRadialGradient(gradElement, defs, null);
+            var radialGradient = new RadialGradient(gradElement, defs, null);
+            var brush = radialGradient.Parse();
 
             Assert.IsInstanceOfType(brush, typeof(RadialGradientBrush));
             Assert.AreEqual(GradientSpreadMethod.Reflect, ((RadialGradientBrush)brush).SpreadMethod);

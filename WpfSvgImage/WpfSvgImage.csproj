@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/DFischer-LA/WpfSvgImage</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DFischer-LA/WpfSvgImage</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <Version>$(AssemblyVersion)</Version>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
