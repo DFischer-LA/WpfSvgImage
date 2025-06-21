@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Windows;
-using System.Windows.Markup.Localizer;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using System.Xml.Linq;
 using WpfSvgImage.Elements;
 
@@ -16,6 +13,7 @@ namespace WpfSvgImage
         public double? StrokeWidth { get; set; }
         public string? Fill { get; set; }
         public string? FillRule { get; set; }
+        public Transform? Transform { get; set; }
     }
 
     /// <summary>
@@ -66,14 +64,23 @@ namespace WpfSvgImage
         }
 
         /// <summary>
-        /// Recursively parses an SVG group (&lt;g&gt;) or the root element and its children.
+        /// Recursively parses an SVG group (<g>) or the root element and its children.
         /// </summary>
         /// <param name="element">The group or root XElement.</param>
         /// <param name="reusableDefinitions">Reusable definitions for elements like gradients.</param>
-        /// <param name="groupProperties">Inherited group properties.</param>
+        /// <param name="groupProperties">Inherited group properties, including transform.</param>
         /// <returns>A DrawingGroup for the group and its children.</returns>
         internal DrawingGroup ParseGroup(XElement element, Defs reusableDefinitions, SvgGroupProperties? groupProperties)
         {
+            // Clone or create groupProperties for this level to avoid mutating parent
+            groupProperties = groupProperties != null ? new SvgGroupProperties {
+                Stroke = groupProperties.Stroke,
+                StrokeWidth = groupProperties.StrokeWidth,
+                Fill = groupProperties.Fill,
+                FillRule = groupProperties.FillRule,
+                Transform = groupProperties.Transform
+            } : new SvgGroupProperties();
+
             var group = new DrawingGroup();
 
             // Inherit or override group properties from attributes.
@@ -82,25 +89,50 @@ namespace WpfSvgImage
                 switch (attribute.Name.LocalName)
                 {
                     case SvgNames.stroke:
-                        groupProperties ??= new SvgGroupProperties();
                         groupProperties.Stroke = attribute.Value;
                         break;
                     case SvgNames.strokeWidth:
-                        groupProperties ??= new SvgGroupProperties();
                         if (double.TryParse(attribute.Value, out double strokeWidth))
                         {
                             groupProperties.StrokeWidth = strokeWidth;
                         }
                         break;
                     case SvgNames.fill:
-                        groupProperties ??= new SvgGroupProperties();
                         groupProperties.Fill = attribute.Value;
                         break;
                     case SvgNames.fillRule:
-                        groupProperties ??= new SvgGroupProperties();
                         groupProperties.FillRule = attribute.Value;
                         break;
+                    case SvgNames.transform:
+                        var currentTransform = SvgHelpers.ParseTransform(attribute.Value);
+                        if (groupProperties.Transform != null && groupProperties.Transform != System.Windows.Media.Transform.Identity)
+                        {
+                            var groupTransform = new System.Windows.Media.TransformGroup();
+                            if (groupProperties.Transform is TransformGroup)
+                            {
+                                foreach (var t in ((TransformGroup)groupProperties.Transform).Children)
+                                {
+                                    groupTransform.Children.Add(t);
+                                }
+                            }
+                            else
+                            {
+                                groupTransform.Children.Add(groupProperties.Transform);
+                            }
+                            groupTransform.Children.Add(currentTransform);
+                            groupProperties.Transform = groupTransform;
+                        }
+                        else
+                        {
+                            groupProperties.Transform = currentTransform;
+                        }
+                        break;
                 }
+            }
+
+            if (groupProperties.Transform != null && groupProperties.Transform != System.Windows.Media.Transform.Identity)
+            {
+                group.Transform = groupProperties.Transform;
             }
 
             // Parse child elements and add their drawings to the group.

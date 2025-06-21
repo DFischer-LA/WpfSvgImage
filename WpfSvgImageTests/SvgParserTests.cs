@@ -208,5 +208,61 @@ namespace WpfSvgImageTests
             Assert.IsInstanceOfType(brush, typeof(RadialGradientBrush));
             Assert.AreEqual(GradientSpreadMethod.Reflect, ((RadialGradientBrush)brush).SpreadMethod);
         }
+
+        [TestMethod]
+        public void ParseNestedGroups_AppliesInheritedTransformsAndStyles()
+        {
+            var svg = @"<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+                <g fill='red' transform='translate(10,10)'>
+                    <g fill='green' transform='scale(2)'>
+                        <g fill='blue' transform='rotate(45)'>
+                            <rect x='0' y='0' width='10' height='10'/>
+                        </g>
+                    </g>
+                </g>
+            </svg>";
+
+            var doc = System.Xml.Linq.XDocument.Parse(svg);
+            var parser = new SvgParser();
+            var image = parser.SvgToImage(doc);
+            Assert.IsNotNull(image);
+            var rootGroup = image.Drawing as DrawingGroup;
+            Assert.IsNotNull(rootGroup);
+            // First child: <g fill='red' ...>
+            Assert.IsTrue(rootGroup.Children.Count > 0);
+            var group1 = rootGroup.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group1);
+            Assert.IsNotNull(group1.Transform);
+            Assert.IsInstanceOfType(group1.Transform, typeof(TranslateTransform));
+            // Second child: <g fill='green' ...>
+            Assert.IsTrue(group1.Children.Count > 0);
+            var group2 = group1.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group2);
+            Assert.IsNotNull(group2.Transform);
+            Assert.IsInstanceOfType(group2.Transform, typeof(TransformGroup));
+            var group2TransformGroup = (TransformGroup)group2.Transform;
+            Assert.AreEqual(2, group2TransformGroup.Children.Count); // translate, scale
+            Assert.IsInstanceOfType(group2TransformGroup.Children[0], typeof(TranslateTransform));
+            Assert.IsInstanceOfType(group2TransformGroup.Children[1], typeof(ScaleTransform));
+            // Third child: <g fill='blue' ...>
+            Assert.IsTrue(group2.Children.Count > 0);
+            var group3 = group2.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group3);
+            Assert.IsNotNull(group3.Transform);
+            Assert.IsInstanceOfType(group3.Transform, typeof(TransformGroup));
+            var group3TransformGroup = (TransformGroup)group3.Transform;
+            Assert.AreEqual(3, group3TransformGroup.Children.Count); // translate, scale, rotate
+            Assert.IsInstanceOfType(group3TransformGroup.Children[0], typeof(TranslateTransform));
+            Assert.IsInstanceOfType(group3TransformGroup.Children[1], typeof(ScaleTransform));
+            Assert.IsInstanceOfType(group3TransformGroup.Children[2], typeof(RotateTransform));
+            // Innermost child: <rect ...>
+            Assert.IsTrue(group3.Children.Count > 0);
+            var rectDrawing = group3.Children[0] as GeometryDrawing;
+            Assert.IsNotNull(rectDrawing);
+            // The fill should be blue (from innermost group)
+            var solidBrush = rectDrawing.Brush as SolidColorBrush;
+            Assert.IsNotNull(solidBrush);
+            Assert.AreEqual(Colors.Blue, solidBrush.Color);
+        }
     }
 }
