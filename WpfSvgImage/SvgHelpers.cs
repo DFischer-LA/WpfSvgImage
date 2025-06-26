@@ -82,8 +82,48 @@ namespace WpfSvgImage
                 return color;
             }
             // Otherwise, apply the opacity to the color's alpha channel.
+            opacity = Math.Clamp(opacity, 0.0, 1.0); // Ensure opacity is between 0 and 1.
             byte alpha = (byte)(color.A * opacity);
             return Color.FromArgb(alpha, color.R, color.G, color.B);
+        }
+
+        /// <summary>
+        /// Applies a given opacity to a WPF <see cref="Brush"/>.
+        /// </summary>
+        /// <param name="brush">The base brush to apply opacity to.</param>
+        /// <param name="opacity">The opacity value (0.0 to 1.0).</param>
+        /// <returns></returns>
+        public static Brush ApplyOpacityToBrush(Brush brush, double opacity)
+        {
+            if(opacity >= 1.0)
+            {
+                return brush; // No change needed if opacity is 1 or greater.
+            }
+            if (brush is SolidColorBrush solidColorBrush)
+            {
+                // If the brush is a SolidColorBrush, apply opacity to its color.
+                Color color = solidColorBrush.Color;
+                return new SolidColorBrush(ApplyOpacityToColor(color, opacity));
+            }
+            else if (brush is LinearGradientBrush linearGradientBrush)
+            {
+                // Apply opacity to each gradient stop's color.
+                foreach (var stop in linearGradientBrush.GradientStops)
+                {
+                    stop.Color = ApplyOpacityToColor(stop.Color, opacity);
+                }
+                return linearGradientBrush;
+            }
+            else if (brush is RadialGradientBrush radialGradientBrush)
+            {
+                // Apply opacity to each gradient stop's color.
+                foreach (var stop in radialGradientBrush.GradientStops)
+                {
+                    stop.Color = ApplyOpacityToColor(stop.Color, opacity);
+                }
+                return radialGradientBrush;
+            }
+            return brush; // Return unchanged for other brush types.
         }
 
         /// <summary>

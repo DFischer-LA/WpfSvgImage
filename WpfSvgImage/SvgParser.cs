@@ -14,6 +14,7 @@ namespace WpfSvgImage
         public string? Fill { get; set; }
         public string? FillRule { get; set; }
         public Transform? Transform { get; set; }
+        public double Opacity { get; set; } = 1.0; // Default opacity is 1 (fully opaque)
     }
 
     /// <summary>
@@ -78,7 +79,8 @@ namespace WpfSvgImage
                 StrokeWidth = groupProperties.StrokeWidth,
                 Fill = groupProperties.Fill,
                 FillRule = groupProperties.FillRule,
-                Transform = groupProperties.Transform
+                Transform = groupProperties.Transform,
+                Opacity = groupProperties.Opacity
             } : new SvgGroupProperties();
 
             var group = new DrawingGroup();
@@ -125,6 +127,12 @@ namespace WpfSvgImage
                         else
                         {
                             groupProperties.Transform = currentTransform;
+                        }
+                        break;
+                    case SvgNames.opacity:
+                        if (double.TryParse(attribute.Value, out double opacity))
+                        {
+                            groupProperties.Opacity *= opacity;
                         }
                         break;
                 }

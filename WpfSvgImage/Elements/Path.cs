@@ -26,14 +26,12 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the path.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
-
             PathGeometry pathGeometry = new PathGeometry();
             geometryDrawing.Geometry = pathGeometry;
             pathGeometry.FillRule = _groupProperties?.FillRule == SvgNames.evenodd ? FillRule.EvenOdd : FillRule.Nonzero;
 
             // Populate style, stroke, fill, and transform information.
-            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions);
+            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions, _groupProperties);
           
             // Parse path data and fill rule.
             foreach (var attribute in _xElement.Attributes())

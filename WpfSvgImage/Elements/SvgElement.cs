@@ -34,40 +34,46 @@ namespace WpfSvgImage.Elements
         public abstract object Parse();
 
         /// <summary>
-        /// Applies inherited group properties (stroke, fill) to a GeometryDrawing.
-        /// </summary>
-        /// <param name="drawing">The GeometryDrawing to update.</param>
-        /// <param name="groupProperties">Inherited group properties.</param>
-        protected void PopulateInheritedGroupProperties(GeometryDrawing drawing, SvgGroupProperties? groupProperties)
-        {
-            if (groupProperties != null)
-            {
-                if (!string.IsNullOrEmpty(groupProperties.Stroke))
-                {
-                    drawing.Pen = new Pen(SvgHelpers.ParseBrush(groupProperties.Stroke), groupProperties.StrokeWidth ?? 1);
-                }
-                if (!string.IsNullOrEmpty(groupProperties.Fill))
-                {
-                    drawing.Brush = SvgHelpers.ParseBrush(groupProperties.Fill);
-                }
-            }
-        }
-
-        /// <summary>
         /// Populates common properties (style, stroke, fill, transform) on a GeometryDrawing.
         /// </summary>
         /// <param name="drawing"></param>
         /// <param name="geometry"></param>
         /// <param name="element"></param>
         /// <param name="reusableDefinitions"></param>
-        protected void PopulateCommonInfo(GeometryDrawing drawing, Geometry geometry, XElement element, Defs reusableDefinitions)
+        protected void PopulateCommonInfo(GeometryDrawing drawing, Geometry geometry, XElement element, Defs reusableDefinitions, SvgGroupProperties? groupProperties)
         {
+            PopulateInheritedGroupProperties(drawing, groupProperties);
             // Populate style, stroke, fill, and transform information.
             PopulateStyleInfo(drawing, _xElement, _reusableDefinitions);
-            PopulateStrokeInfo(drawing, _xElement, _reusableDefinitions);
-            PopulateFillInfo(drawing, _xElement, _reusableDefinitions);
+            PopulateStrokeInfo(drawing, _xElement, _reusableDefinitions, groupProperties?.Opacity ?? 1.0);
+            PopulateFillInfo(drawing, _xElement, _reusableDefinitions, groupProperties?.Opacity ?? 1.0);
             PopulateTransformInfo(drawing, geometry, _xElement, _reusableDefinitions);
         }
+
+        /// <summary>
+        /// Applies inherited group properties (stroke, fill) to a GeometryDrawing.
+        /// </summary>
+        /// <param name="drawing">The GeometryDrawing to update.</param>
+        /// <param name="groupProperties">Inherited group properties.</param>
+        private void PopulateInheritedGroupProperties(GeometryDrawing drawing, SvgGroupProperties? groupProperties)
+        {
+            if (groupProperties != null)
+            {
+                if (!string.IsNullOrEmpty(groupProperties.Stroke))
+                {
+                    Brush brush = SvgHelpers.ParseBrush(groupProperties.Stroke);
+                    brush = SvgHelpers.ApplyOpacityToBrush(brush, groupProperties.Opacity);
+                    drawing.Pen = new Pen(brush, groupProperties.StrokeWidth ?? 1);
+                }
+                if (!string.IsNullOrEmpty(groupProperties.Fill))
+                {
+                    Brush brush = SvgHelpers.ParseBrush(groupProperties.Fill);
+                    brush = SvgHelpers.ApplyOpacityToBrush(brush, groupProperties.Opacity);
+                    drawing.Brush = brush;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Sets the stroke (Pen) on a GeometryDrawing from SVG attributes.
@@ -75,7 +81,7 @@ namespace WpfSvgImage.Elements
         /// <param name="drawing">The GeometryDrawing to update.</param>
         /// <param name="element">The SVG element with stroke attributes.</param>
         /// <param name="reusableDefinitions">Reusable definitions for referenced elements.</param>
-        private void PopulateStrokeInfo(GeometryDrawing drawing, XElement element, Defs reusableDefinitions)
+        private void PopulateStrokeInfo(GeometryDrawing drawing, XElement element, Defs reusableDefinitions, double opacity)
         {
             var strokeAttribute = element.Attribute(SvgNames.stroke);
             var strokeWidthAtttribute = element.Attribute(SvgNames.strokeWidth);
@@ -87,11 +93,13 @@ namespace WpfSvgImage.Elements
                 if (SvgHelpers.IsUseReference(strokeAttribute, out string strokeId))
                 {
                     strokeBrush = reusableDefinitions.GetElement<Brush>(strokeId) ?? Brushes.Black;
+                    strokeBrush = strokeBrush.Clone(); // Clone to avoid modifying the cached brush
                 }
                 else
                 {
                     strokeBrush = SvgHelpers.ParseBrush(strokeAttribute.Value);
                 }
+                strokeBrush = SvgHelpers.ApplyOpacityToBrush(strokeBrush, opacity);
                 if (strokeWidthAtttribute != null)
                 {
                     if (SvgHelpers.IsUseReference(strokeWidthAtttribute, out string strokeWidthId))
@@ -113,20 +121,24 @@ namespace WpfSvgImage.Elements
         /// <param name="drawing">The GeometryDrawing to update.</param>
         /// <param name="element">The SVG element with fill attributes.</param>
         /// <param name="reusableDefinitions">Reusable definitions for referenced elements.</param>
-        private void PopulateFillInfo(GeometryDrawing drawing, XElement element, Defs reusableDefinitions)
+        private void PopulateFillInfo(GeometryDrawing drawing, XElement element, Defs reusableDefinitions, double opacity)
         {
             var fillAttribute = element.Attribute(SvgNames.fill);
             if (fillAttribute != null)
             {
+                Brush fillBrush = Brushes.Black;
                 if (SvgHelpers.IsUseReference(fillAttribute, out string fillId))
                 {
-                    drawing.Brush = reusableDefinitions.GetElement<Brush>(fillId) ?? Brushes.Transparent;
+                    fillBrush = reusableDefinitions.GetElement<Brush>(fillId) ?? Brushes.Transparent;
+                    fillBrush = fillBrush.Clone(); // Clone to avoid modifying the cached brush
                 }
                 else
                 {
                     // Parse the fill color directly.
-                    drawing.Brush = SvgHelpers.ParseBrush(fillAttribute.Value);
+                    fillBrush = SvgHelpers.ParseBrush(fillAttribute.Value);
                 }
+                fillBrush = SvgHelpers.ApplyOpacityToBrush(fillBrush, opacity);
+                drawing.Brush = fillBrush;
             }
         }
 

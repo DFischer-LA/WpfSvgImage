@@ -29,13 +29,11 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the rectangle.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
-
             RectangleGeometry rectangleGeometry = new RectangleGeometry();
             geometryDrawing.Geometry = rectangleGeometry;
 
             // Populate style, stroke, fill, and transform information.
-            PopulateCommonInfo(geometryDrawing, rectangleGeometry, _xElement, _reusableDefinitions);
+            PopulateCommonInfo(geometryDrawing, rectangleGeometry, _xElement, _reusableDefinitions, _groupProperties);
 
             // Parse rectangle attributes.
             foreach (var attribute in _xElement.Attributes())

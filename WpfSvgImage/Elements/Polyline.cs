@@ -29,13 +29,11 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the polyline.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
-
             PathGeometry pathGeometry = new PathGeometry();
             geometryDrawing.Geometry = pathGeometry;
 
-            // Populate style, stroke, fill, and transform information.\
-            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions);
+            // Populate style, stroke, fill, and transform information.
+            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions, _groupProperties);
 
             // Parse polyline points.
             foreach (var attribute in _xElement.Attributes())

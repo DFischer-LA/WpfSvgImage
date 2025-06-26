@@ -29,13 +29,13 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the ellipse.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
+            //PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
 
             EllipseGeometry ellipseGeometry = new EllipseGeometry();
             geometryDrawing.Geometry = ellipseGeometry;
 
             // Populate style, stroke, fill, and transform information.
-            PopulateCommonInfo(geometryDrawing, ellipseGeometry, _xElement, _reusableDefinitions);
+            PopulateCommonInfo(geometryDrawing, ellipseGeometry, _xElement, _reusableDefinitions, _groupProperties);
 
             // Parse ellipse attributes.
             foreach (var attribute in _xElement.Attributes())

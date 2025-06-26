@@ -29,13 +29,11 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the polygon.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
-
             PathGeometry pathGeometry = new PathGeometry();
             geometryDrawing.Geometry = pathGeometry;
 
             // Populate style, stroke, fill, and transform information.
-            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions);
+            PopulateCommonInfo(geometryDrawing, pathGeometry, _xElement, _reusableDefinitions, _groupProperties);
 
             // Parse polygon points and ensure closure.
             foreach (var attribute in _xElement.Attributes())

@@ -29,13 +29,11 @@ namespace WpfSvgImage.Elements
         {
             // Create a new GeometryDrawing for the line.
             GeometryDrawing geometryDrawing = new GeometryDrawing();
-            PopulateInheritedGroupProperties(geometryDrawing, _groupProperties);
-
             LineGeometry lineGeometry = new LineGeometry();
             geometryDrawing.Geometry = lineGeometry;
 
             // Populate style, stroke, and transform information.
-            PopulateCommonInfo(geometryDrawing, lineGeometry, _xElement, _reusableDefinitions);
+            PopulateCommonInfo(geometryDrawing, lineGeometry, _xElement, _reusableDefinitions, _groupProperties);
 
             // Parse line attributes.
             foreach (var attribute in _xElement.Attributes())

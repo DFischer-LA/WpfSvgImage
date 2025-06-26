@@ -264,5 +264,73 @@ namespace WpfSvgImageTests
             Assert.IsNotNull(solidBrush);
             Assert.AreEqual(Colors.Blue, solidBrush.Color);
         }
+
+        [TestMethod]
+        public void ParseNestedGroups_FillOnGroup_AppliesInheritedOpacity()
+        {
+            var svg = @"<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+                <g fill='red' opacity='0.5'>
+                    <g opacity='0.5'>
+                        <rect x='0' y='0' width='10' height='10'/>
+                    </g>
+                </g>
+            </svg>";
+
+            var doc = System.Xml.Linq.XDocument.Parse(svg);
+            var parser = new SvgParser();
+            var image = parser.SvgToImage(doc);
+            Assert.IsNotNull(image);
+            var rootGroup = image.Drawing as DrawingGroup;
+            Assert.IsNotNull(rootGroup);
+            // First child: <g fill='red' opacity=0.5>
+            Assert.IsTrue(rootGroup.Children.Count > 0);
+            var group1 = rootGroup.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group1);
+            // Second child: <g opacity=0.5>
+            Assert.IsTrue(group1.Children.Count > 0);
+            var group2 = group1.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group2);
+            // Inner object rect
+            Assert.IsTrue(group2.Children.Count > 0);
+            var rectDrawing = group2.Children[0] as GeometryDrawing;
+            Assert.IsNotNull(rectDrawing);
+            // The opacity should be 0.25 (from both groups)
+            SolidColorBrush brush = (SolidColorBrush)rectDrawing.Brush;
+            Assert.AreEqual((int)(255 * 0.25), brush.Color.A);
+        }
+
+        [TestMethod]
+        public void ParseNestedGroups_FillOnElement_AppliesInheritedOpacity()
+        {
+            var svg = @"<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+                <g opacity='0.5'>
+                    <g opacity='0.5'>
+                        <rect fill='red' x='0' y='0' width='10' height='10'/>
+                    </g>
+                </g>
+            </svg>";
+
+            var doc = System.Xml.Linq.XDocument.Parse(svg);
+            var parser = new SvgParser();
+            var image = parser.SvgToImage(doc);
+            Assert.IsNotNull(image);
+            var rootGroup = image.Drawing as DrawingGroup;
+            Assert.IsNotNull(rootGroup);
+            // First child: <g fill='red' opacity=0.5>
+            Assert.IsTrue(rootGroup.Children.Count > 0);
+            var group1 = rootGroup.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group1);
+            // Second child: <g opacity=0.5>
+            Assert.IsTrue(group1.Children.Count > 0);
+            var group2 = group1.Children[0] as DrawingGroup;
+            Assert.IsNotNull(group2);
+            // Inner object rect
+            Assert.IsTrue(group2.Children.Count > 0);
+            var rectDrawing = group2.Children[0] as GeometryDrawing;
+            Assert.IsNotNull(rectDrawing);
+            // The opacity should be 0.25 (from both groups)
+            SolidColorBrush brush = (SolidColorBrush)rectDrawing.Brush;
+            Assert.AreEqual((int)(255 * 0.25), brush.Color.A);
+        }
     }
 }
