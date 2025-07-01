@@ -48,6 +48,10 @@ namespace WpfSvgImage.Elements
             PopulateStrokeInfo(drawing, _xElement, _reusableDefinitions, groupProperties?.Opacity ?? 1.0);
             PopulateFillInfo(drawing, _xElement, _reusableDefinitions, groupProperties?.Opacity ?? 1.0);
             PopulateTransformInfo(drawing, geometry, _xElement, _reusableDefinitions);
+            if(drawing.Brush == null)
+            {
+                drawing.Brush = Brushes.Black; // Default to black fill if no fill specified
+            }
         }
 
         /// <summary>
