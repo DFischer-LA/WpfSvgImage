@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\camera.svg" />
+    <None Remove="Images\hello.svg" />
+    <None Remove="Images\notebook.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WpfSvgImage\WpfSvgImage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\camera.svg" />
+    <Resource Include="Images\hello.svg" />
+    <Resource Include="Images\notebook.svg" />
+  </ItemGroup>
+
+</Project>
