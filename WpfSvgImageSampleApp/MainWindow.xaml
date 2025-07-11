@@ -7,7 +7,7 @@
         xmlns:svg="clr-namespace:WpfSvgImage;assembly=WpfSvgImage"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="800">
-    <Grid Background="DarkSlateGray">
+    <Grid Background="SlateGray">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -30,5 +30,10 @@
 
         <TextBlock Grid.Row="0" Grid.Column="2" FontSize="18" Foreground="White" HorizontalAlignment="Center" Text="Multicolor"/>
         <svg:SvgImage Grid.Row="1" Grid.Column="2" Margin="20" Width="100" Height="100" SvgSourceUri="pack://application:,,,/Images/notebook.svg"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="18" Foreground="White" HorizontalAlignment="Center" Text="Mouse over to change fill"/>
+        <svg:SvgImage x:Name="AlertImage" Grid.Row="3" Grid.Column="0" Margin="20" Width="100" Height="100" SvgSourceUri="pack://application:,,,/Images/alert.svg"
+                      MouseEnter="AlertImage_MouseEnter"
+                      MouseLeave="AlertImage_MouseLeave"/>
     </Grid>
 </Window>

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\alert.svg" />
     <None Remove="Images\camera.svg" />
     <None Remove="Images\hello.svg" />
     <None Remove="Images\notebook.svg" />
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\alert.svg" />
     <Resource Include="Images\camera.svg" />
     <Resource Include="Images\hello.svg" />
     <Resource Include="Images\notebook.svg" />

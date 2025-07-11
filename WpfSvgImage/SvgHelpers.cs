@@ -492,6 +492,37 @@ namespace WpfSvgImage
             return style;
         }
 
+        /// Parses an SVG 'stroke-linecap' attribute value into a WPF <see cref="PenLineCap"/>.
+        /// Returns <see cref="PenLineCap.Flat"/> for "butt" or unknown values, <see cref="PenLineCap.Round"/> for "round", and <see cref="PenLineCap.Square"/> for "square".
+        /// </summary>
+        /// <param name="attribute">The SVG 'stroke-linecap' attribute.</param>
+        /// <returns>The corresponding <see cref="PenLineCap"/> value.</returns>
+        public static PenLineCap ParseLineCap(XAttribute? attribute)
+        {
+            if (attribute != null)
+            {
+                switch (attribute.Value.ToLowerInvariant())
+                {
+                    case SvgNames.butt:
+                        return PenLineCap.Flat;
+                    case SvgNames.round:
+                        return PenLineCap.Round;
+                    case SvgNames.square:
+                        return PenLineCap.Square;
+                }
+            }
+            return PenLineCap.Flat;
+        }
+
+        public static bool CompareBrushesByColor(Brush b1, Brush b2)
+        {
+            if (b1 is SolidColorBrush sb1 && b2 is SolidColorBrush sb2)
+            {
+                return sb1.Color.Equals(sb2.Color);
+            }
+            return false;
+        }
+
         public static bool IsUseReference(XAttribute attribute, out string refId)
         {
             return IsUseReference(attribute.Value, out refId);

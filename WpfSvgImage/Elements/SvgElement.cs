@@ -89,6 +89,7 @@ namespace WpfSvgImage.Elements
         {
             var strokeAttribute = element.Attribute(SvgNames.stroke);
             var strokeWidthAtttribute = element.Attribute(SvgNames.strokeWidth);
+            var strokeCapAttribute = element.Attribute(SvgNames.strokeLinecap);
 
             if (strokeAttribute != null)
             {
@@ -116,6 +117,7 @@ namespace WpfSvgImage.Elements
                     }
                 }
                 drawing.Pen = new Pen(strokeBrush, strokeWidth > 0 ? strokeWidth : 1);
+                drawing.Pen.StartLineCap = drawing.Pen.EndLineCap = SvgHelpers.ParseLineCap(strokeCapAttribute);
             }
         }
 
@@ -130,6 +132,16 @@ namespace WpfSvgImage.Elements
             var fillAttribute = element.Attribute(SvgNames.fill);
             if (fillAttribute != null)
             {
+                var fillOpacityAttribute = element.Attribute(SvgNames.fillOpacity);
+                if (fillOpacityAttribute != null && double.TryParse(fillOpacityAttribute.Value, out double fillOpacity))
+                {
+                    opacity *= fillOpacity; // Combine with base opacity
+                }
+                var opacityAttribute = element.Attribute(SvgNames.opacity);
+                if (opacityAttribute != null && double.TryParse(opacityAttribute.Value, out double elementOpacity))
+                {
+                    opacity *= elementOpacity; // Combine with base opacity
+                }
                 Brush fillBrush = Brushes.Black;
                 if (SvgHelpers.IsUseReference(fillAttribute, out string fillId))
                 {
