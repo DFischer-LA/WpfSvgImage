@@ -8,6 +8,7 @@
 - Load SVGs from file paths, streams, or resource URIs
 - Dependency property support for XAML data binding
 - Simple API for programmatic SVG image creation
+- Functions to change colors of an SVG image at runtime. See usage in sample app
 
 ## Installation
 
